@@ -5,8 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Patient } from "@/types/Patient";
-import { Save, Trash, ArrowRight } from "lucide-react";
+import { Save, Trash, ArrowRight, Printer } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { genererDocumentWord } from "@/services/StorageService";
 
 interface FormulairePatientProps {
   litNumero: number;
@@ -90,6 +91,16 @@ const FormulairePatient: React.FC<FormulairePatientProps> = ({
     }
   };
 
+  const handleImprimer = () => {
+    if (patient) {
+      genererDocumentWord(patient);
+      toast({
+        title: "Succès",
+        description: "Le document a été généré et téléchargé",
+      });
+    }
+  };
+
   if (!litNumero) {
     return (
       <div className="p-6 bg-gray-100 rounded-lg text-center">
@@ -147,9 +158,21 @@ const FormulairePatient: React.FC<FormulairePatientProps> = ({
       </div>
 
       <div className="flex flex-wrap gap-3 justify-between mt-6">
-        <Button type="submit" className="bg-medical-600 hover:bg-medical-700">
-          <Save className="mr-2 h-4 w-4" /> Sauvegarder
-        </Button>
+        <div className="flex gap-2">
+          <Button type="submit" className="bg-medical-600 hover:bg-medical-700">
+            <Save className="mr-2 h-4 w-4" /> Sauvegarder
+          </Button>
+          
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleImprimer}
+            disabled={!patient}
+            className="border-medical-600 text-medical-600 hover:bg-medical-50"
+          >
+            <Printer className="mr-2 h-4 w-4" /> Imprimer
+          </Button>
+        </div>
         
         <div className="flex gap-2">
           <Button
