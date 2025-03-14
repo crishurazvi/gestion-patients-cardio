@@ -109,3 +109,108 @@ export const genererDocumentWord = (patient: Patient): void => {
   URL.revokeObjectURL(url);
   document.body.removeChild(a);
 };
+
+// Fonction pour générer un document Word pour tous les patients
+export const genererDocumentWordTousPatients = (patients: Patient[]): void => {
+  if (patients.length === 0) {
+    return;
+  }
+
+  // Créer le contenu du document (HTML formaté)
+  let contenu = `
+    <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+          xmlns:w='urn:schemas-microsoft-com:office:word'
+          xmlns='http://www.w3.org/TR/REC-html40'>
+    <head>
+      <meta charset="utf-8">
+      <title>Tous les Patients</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          font-size: 9pt;
+        }
+        h1 {
+          font-size: 12pt;
+          color: #3b75b5;
+          margin-top: 40px;
+        }
+        h2 {
+          font-size: 11pt;
+          color: #3b75b5;
+        }
+        .patient {
+          margin-bottom: 30px;
+          page-break-inside: avoid;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 15px;
+        }
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        th {
+          background-color: #f2f2f2;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Liste des Patients - Service de Cardiologie CH Tarbes</h1>
+  `;
+
+  // Ajouter chaque patient au document
+  patients.forEach(patient => {
+    contenu += `
+      <div class="patient">
+        <h2>Patient: ${patient.nom} - Lit ${patient.litNumero}</h2>
+        <table>
+          <tr>
+            <th>Nom</th>
+            <td>${patient.nom}</td>
+          </tr>
+          <tr>
+            <th>Âge</th>
+            <td>${patient.age} ans</td>
+          </tr>
+          <tr>
+            <th>Date d'admission</th>
+            <td>${patient.dateAdmission}</td>
+          </tr>
+        </table>
+        
+        <h3>Observations</h3>
+        <p>${patient.observations.replace(/\n/g, '<br>')}</p>
+      </div>
+    `;
+  });
+
+  // Ajouter le pied de page et fermer le document
+  contenu += `
+      <p style="font-style: italic; margin-top: 30px;">
+        Document généré le ${new Date().toLocaleDateString()} à ${new Date().toLocaleTimeString()}
+      </p>
+    </body>
+    </html>
+  `;
+
+  // Créer un blob avec le contenu HTML
+  const blob = new Blob([contenu], { type: 'application/msword;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  
+  // Créer un lien de téléchargement
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Tous_Les_Patients_${new Date().toISOString().split('T')[0]}.doc`;
+  a.style.display = 'none';
+  
+  // Simuler un clic pour télécharger le fichier
+  document.body.appendChild(a);
+  a.click();
+  
+  // Nettoyer
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+};

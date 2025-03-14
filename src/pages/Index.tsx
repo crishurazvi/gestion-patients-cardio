@@ -9,8 +9,11 @@ import {
   sauvegarderPatients,
   recupererPatientsTransferes,
   sauvegarderPatientsTransferes,
+  genererDocumentWordTousPatients,
 } from "@/services/StorageService";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Printer } from "lucide-react";
 
 const Index = () => {
   const { toast } = useToast();
@@ -72,6 +75,22 @@ const Index = () => {
     });
   };
 
+  const handleImprimerTousPatients = () => {
+    if (patients.length === 0) {
+      toast({
+        title: "Information",
+        description: "Il n'y a pas de patients à imprimer",
+      });
+      return;
+    }
+    
+    genererDocumentWordTousPatients(patients);
+    toast({
+      title: "Succès",
+      description: "Le document avec tous les patients a été généré et téléchargé",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-6 lg:p-8">
       <header className="mb-8 text-center">
@@ -82,6 +101,15 @@ const Index = () => {
       </header>
 
       <div className="max-w-7xl mx-auto">
+        <div className="mb-6 flex justify-end">
+          <Button 
+            onClick={handleImprimerTousPatients}
+            className="bg-medical-600 hover:bg-medical-700"
+          >
+            <Printer className="mr-2 h-4 w-4" /> Imprimer tous les patients
+          </Button>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Section des lits */}
           <div className="lg:col-span-1">
