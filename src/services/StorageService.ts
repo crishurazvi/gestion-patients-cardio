@@ -29,7 +29,7 @@ export const recupererPatientsTransferes = (): Patient[] => {
 
 // Fonction pour générer un document Word pour un patient
 export const genererDocumentWord = (patient: Patient): void => {
-  // Créer le contenu du document (HTML formaté)
+  // Créer le contenu du document (HTML simplifié)
   const contenu = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' 
           xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -41,52 +41,27 @@ export const genererDocumentWord = (patient: Patient): void => {
         body {
           font-family: Arial, sans-serif;
           font-size: 9pt;
+          line-height: 1;
+          margin: 0;
+          padding: 0;
         }
-        h1 {
-          font-size: 12pt;
-          color: #3b75b5;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        td, th {
-          border: 1px solid #dddddd;
-          text-align: left;
-          padding: 8px;
-        }
-        th {
-          background-color: #f2f2f2;
+        p {
+          margin: 0;
+          padding: 0;
         }
       </style>
     </head>
     <body>
-      <h1>Fiche Patient - Service de Cardiologie CH Tarbes</h1>
-      <table>
-        <tr>
-          <th>Numéro de lit</th>
-          <td>${patient.litNumero}</td>
-        </tr>
-        <tr>
-          <th>Nom</th>
-          <td>${patient.nom}</td>
-        </tr>
-        <tr>
-          <th>Âge</th>
-          <td>${patient.age} ans</td>
-        </tr>
-        <tr>
-          <th>Date d'admission</th>
-          <td>${patient.dateAdmission}</td>
-        </tr>
-      </table>
-      
-      <h2>Observations</h2>
+      <p>Fiche Patient - Service de Cardiologie CH Tarbes</p>
+      <p>Numéro de lit: ${patient.litNumero}</p>
+      <p>Nom: ${patient.nom}</p>
+      <p>Âge: ${patient.age} ans</p>
+      <p>Date d'admission: ${patient.dateAdmission}</p>
+      <p>&nbsp;</p>
+      <p>Observations:</p>
       <p>${patient.observations.replace(/\n/g, '<br>')}</p>
-      
-      <p style="font-style: italic; margin-top: 30px;">
-        Document généré le ${new Date().toLocaleDateString()} à ${new Date().toLocaleTimeString()}
-      </p>
+      <p>&nbsp;</p>
+      <p>Document généré le ${new Date().toLocaleDateString()} à ${new Date().toLocaleTimeString()}</p>
     </body>
     </html>
   `;
@@ -116,7 +91,7 @@ export const genererDocumentWordTousPatients = (patients: Patient[]): void => {
     return;
   }
 
-  // Créer le contenu du document (HTML formaté)
+  // Créer le contenu du document (HTML simplifié)
   let contenu = `
     <html xmlns:o='urn:schemas-microsoft-com:office:office' 
           xmlns:w='urn:schemas-microsoft-com:office:word'
@@ -128,70 +103,42 @@ export const genererDocumentWordTousPatients = (patients: Patient[]): void => {
         body {
           font-family: Arial, sans-serif;
           font-size: 9pt;
+          line-height: 1;
+          margin: 0;
+          padding: 0;
         }
-        h1 {
-          font-size: 12pt;
-          color: #3b75b5;
-          margin-top: 40px;
-        }
-        h2 {
-          font-size: 11pt;
-          color: #3b75b5;
-        }
-        .patient {
-          margin-bottom: 30px;
-          page-break-inside: avoid;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          margin-bottom: 15px;
-        }
-        td, th {
-          border: 1px solid #dddddd;
-          text-align: left;
-          padding: 8px;
-        }
-        th {
-          background-color: #f2f2f2;
+        p {
+          margin: 0;
+          padding: 0;
         }
       </style>
     </head>
     <body>
-      <h1>Liste des Patients - Service de Cardiologie CH Tarbes</h1>
+      <p>Liste des Patients - Service de Cardiologie CH Tarbes</p>
+      <p>&nbsp;</p>
   `;
 
   // Ajouter chaque patient au document
-  patients.forEach(patient => {
+  patients.forEach((patient, index) => {
     contenu += `
-      <div class="patient">
-        <h2>Patient: ${patient.nom} - Lit ${patient.litNumero}</h2>
-        <table>
-          <tr>
-            <th>Nom</th>
-            <td>${patient.nom}</td>
-          </tr>
-          <tr>
-            <th>Âge</th>
-            <td>${patient.age} ans</td>
-          </tr>
-          <tr>
-            <th>Date d'admission</th>
-            <td>${patient.dateAdmission}</td>
-          </tr>
-        </table>
-        
-        <h3>Observations</h3>
-        <p>${patient.observations.replace(/\n/g, '<br>')}</p>
-      </div>
+      <p>Patient: ${patient.nom} - Lit ${patient.litNumero}</p>
+      <p>Nom: ${patient.nom}</p>
+      <p>Âge: ${patient.age} ans</p>
+      <p>Date d'admission: ${patient.dateAdmission}</p>
+      <p>Observations:</p>
+      <p>${patient.observations.replace(/\n/g, '<br>')}</p>
+      <p>&nbsp;</p>
     `;
+    
+    // Ajouter un saut de page entre chaque patient (sauf le dernier)
+    if (index < patients.length - 1) {
+      contenu += `<br clear=all style='page-break-before:always'>`;
+    }
   });
 
   // Ajouter le pied de page et fermer le document
   contenu += `
-      <p style="font-style: italic; margin-top: 30px;">
-        Document généré le ${new Date().toLocaleDateString()} à ${new Date().toLocaleTimeString()}
-      </p>
+      <p>Document généré le ${new Date().toLocaleDateString()} à ${new Date().toLocaleTimeString()}</p>
     </body>
     </html>
   `;
